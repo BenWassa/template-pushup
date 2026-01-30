@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getDateString, isValidTimestamp } from '../utils/timestamp';
-import { readUsers, subscribeUsers, writeUsers } from '../utils/localStore';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getDateString, isValidTimestamp } from "../utils/timestamp";
+import { readUsers, subscribeUsers, writeUsers } from "../utils/localStore";
 
 /* eslint-disable react-hooks/preserve-manual-memoization */
 
@@ -15,10 +15,10 @@ const buildUser = (name) => ({
 const getTodayReps = (logs) => {
   if (!logs) return 0;
   const todayDateStr = new Date().toDateString();
-  const todayIsoStr = new Date().toISOString().split('T')[0];
+  const todayIsoStr = new Date().toISOString().split("T")[0];
 
   const validLogs = logs.filter((log) => {
-    if (log.source === 'historical' && log.submitted_date) {
+    if (log.source === "historical" && log.submitted_date) {
       return log.submitted_date === todayIsoStr;
     }
     if (log.timestamp && isValidTimestamp(log.timestamp)) {
@@ -51,11 +51,15 @@ export const useUserData = ({ season, isTraining }) => {
     setTodayReps(getTodayReps(data.logs));
 
     const invalidCount = data.logs
-      ? data.logs.filter((log) => log.source !== 'historical' && !isValidTimestamp(log.timestamp))
-          .length
+      ? data.logs.filter(
+          (log) =>
+            log.source !== "historical" && !isValidTimestamp(log.timestamp),
+        ).length
       : 0;
     if (invalidCount > 0) {
-      console.warn(`Data integrity issue: ${invalidCount} logs have invalid timestamps`);
+      console.warn(
+        `Data integrity issue: ${invalidCount} logs have invalid timestamps`,
+      );
     }
   }, []);
 
@@ -86,7 +90,7 @@ export const useUserData = ({ season, isTraining }) => {
 
       profileUnsub.current = subscribeUsers(() => syncUser(cleanName));
     },
-    [syncUser]
+    [syncUser],
   );
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export const useUserData = ({ season, isTraining }) => {
   const addReps = useCallback(
     async (amount) => {
       if (!userData?.id) return;
-      const fieldToUpdate = isTraining ? 'training_reps' : 'official_reps';
+      const fieldToUpdate = isTraining ? "training_reps" : "official_reps";
       const users = readUsers();
       const currentUser = users[userData.id];
       if (!currentUser) return;
@@ -121,7 +125,7 @@ export const useUserData = ({ season, isTraining }) => {
       setUserData({ id: userData.id, ...updatedUser });
       setTodayReps(getTodayReps(updatedUser.logs));
     },
-    [isTraining, season, userData?.id]
+    [isTraining, season, userData?.id],
   );
 
   const undoLastAction = useCallback(async () => {
@@ -130,8 +134,9 @@ export const useUserData = ({ season, isTraining }) => {
     const lastLog = logs.pop();
     if (!lastLog) return;
 
-    const logSeason = lastLog.season || (isTraining ? 'TRAINING' : 'OFFICIAL');
-    const fieldToUpdate = logSeason === 'TRAINING' ? 'training_reps' : 'official_reps';
+    const logSeason = lastLog.season || (isTraining ? "TRAINING" : "OFFICIAL");
+    const fieldToUpdate =
+      logSeason === "TRAINING" ? "training_reps" : "official_reps";
 
     const updatedUser = {
       ...userData,
@@ -147,13 +152,16 @@ export const useUserData = ({ season, isTraining }) => {
 
   const deleteLogByIndex = useCallback(
     async (logIndex) => {
-      if (!userData?.logs || logIndex < 0 || logIndex >= userData.logs.length) return;
+      if (!userData?.logs || logIndex < 0 || logIndex >= userData.logs.length)
+        return;
       const logs = [...userData.logs];
       const logToDelete = logs[logIndex];
       logs.splice(logIndex, 1);
 
-      const logSeason = logToDelete.season || (isTraining ? 'TRAINING' : 'OFFICIAL');
-      const fieldToUpdate = logSeason === 'TRAINING' ? 'training_reps' : 'official_reps';
+      const logSeason =
+        logToDelete.season || (isTraining ? "TRAINING" : "OFFICIAL");
+      const fieldToUpdate =
+        logSeason === "TRAINING" ? "training_reps" : "official_reps";
 
       const updatedUser = {
         ...userData,
@@ -166,13 +174,13 @@ export const useUserData = ({ season, isTraining }) => {
       setUserData(updatedUser);
       setTodayReps(getTodayReps(updatedUser.logs));
     },
-    [isTraining, userData]
+    [isTraining, userData],
   );
 
   const addHistoricalReps = useCallback(
     async (date, amount) => {
       if (!userData?.id || !amount || amount <= 0) return;
-      const fieldToUpdate = isTraining ? 'training_reps' : 'official_reps';
+      const fieldToUpdate = isTraining ? "training_reps" : "official_reps";
 
       const updatedUser = {
         ...userData,
@@ -182,8 +190,8 @@ export const useUserData = ({ season, isTraining }) => {
           ...(userData.logs || []),
           {
             amount,
-            submitted_date: date.toISOString().split('T')[0],
-            source: 'historical',
+            submitted_date: date.toISOString().split("T")[0],
+            source: "historical",
             season,
           },
         ],
@@ -194,7 +202,7 @@ export const useUserData = ({ season, isTraining }) => {
       setUserData(updatedUser);
       setTodayReps(getTodayReps(updatedUser.logs));
     },
-    [isTraining, season, userData]
+    [isTraining, season, userData],
   );
 
   const calculateStreak = useCallback(() => {
@@ -202,11 +210,11 @@ export const useUserData = ({ season, isTraining }) => {
     const uniqueDays = new Set();
 
     userData.logs.forEach((log) => {
-      if (log.source === 'historical' && log.submitted_date) {
+      if (log.source === "historical" && log.submitted_date) {
         uniqueDays.add(log.submitted_date);
       } else if (log.timestamp && isValidTimestamp(log.timestamp)) {
         const date = new Date(log.timestamp);
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = date.toISOString().split("T")[0];
         uniqueDays.add(dateStr);
       }
     });
@@ -216,11 +224,12 @@ export const useUserData = ({ season, isTraining }) => {
 
   const recentLogs = useMemo(
     () => (userData?.logs ? [...userData.logs].reverse().slice(0, 3) : []),
-    [userData?.logs]
+    [userData?.logs],
   );
   const lastLog = useMemo(
-    () => (userData?.logs?.length ? userData.logs[userData.logs.length - 1] : null),
-    [userData?.logs]
+    () =>
+      userData?.logs?.length ? userData.logs[userData.logs.length - 1] : null,
+    [userData?.logs],
   );
   const lastLogAmount = lastLog ? lastLog.amount : 0;
   const isUndoable = Boolean(userData?.logs?.length);

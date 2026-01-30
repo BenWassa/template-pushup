@@ -1,7 +1,7 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.jsx';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
 
 const preventZoom = (event) => {
   if (event.touches && event.touches.length > 1) {
@@ -9,45 +9,48 @@ const preventZoom = (event) => {
   }
 };
 
-document.addEventListener('gesturestart', preventZoom, { passive: false });
-document.addEventListener('gesturechange', preventZoom, { passive: false });
-document.addEventListener('gestureend', preventZoom, { passive: false });
-document.addEventListener('touchmove', preventZoom, { passive: false });
+document.addEventListener("gesturestart", preventZoom, { passive: false });
+document.addEventListener("gesturechange", preventZoom, { passive: false });
+document.addEventListener("gestureend", preventZoom, { passive: false });
+document.addEventListener("touchmove", preventZoom, { passive: false });
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
     const swUrl = `${import.meta.env.BASE_URL}sw.js`;
     navigator.serviceWorker
-      .register(swUrl, { updateViaCache: 'none' })
+      .register(swUrl, { updateViaCache: "none" })
       .then((registration) => {
         window.__swRegistration = registration;
 
         const notifyUpdate = () => {
           if (registration.waiting) {
-            window.dispatchEvent(new Event('sw-update'));
+            window.dispatchEvent(new Event("sw-update"));
           }
         };
 
         notifyUpdate();
 
-        registration.addEventListener('updatefound', () => {
+        registration.addEventListener("updatefound", () => {
           const installing = registration.installing;
           if (!installing) return;
-          installing.addEventListener('statechange', () => {
-            if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-              window.dispatchEvent(new Event('sw-update'));
+          installing.addEventListener("statechange", () => {
+            if (
+              installing.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              window.dispatchEvent(new Event("sw-update"));
             }
           });
         });
       })
       .catch((error) => {
-        console.warn('Service worker registration failed:', error);
+        console.warn("Service worker registration failed:", error);
       });
   });
 }
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 );

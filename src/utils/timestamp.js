@@ -15,7 +15,7 @@ export const toDate = (timestamp) => {
   if (!timestamp) return null;
 
   // Firestore Timestamp has toDate() method
-  if (typeof timestamp.toDate === 'function') {
+  if (typeof timestamp.toDate === "function") {
     return timestamp.toDate();
   }
 
@@ -25,11 +25,11 @@ export const toDate = (timestamp) => {
   }
 
   // Number (milliseconds) - legacy format
-  if (typeof timestamp === 'number') {
+  if (typeof timestamp === "number") {
     return new Date(timestamp);
   }
 
-  console.warn('Unknown timestamp format:', timestamp);
+  console.warn("Unknown timestamp format:", timestamp);
   return null;
 };
 

@@ -1,54 +1,63 @@
-import React, { useState } from 'react';
-import { X, Trash2, Plus } from 'lucide-react';
-import { getDateString } from '../utils/timestamp';
+import React, { useState } from "react";
+import { X, Trash2, Plus } from "lucide-react";
+import { getDateString } from "../utils/timestamp";
 
-const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, onDeleteLog }) => {
-  const [histAmount, setHistAmount] = useState('');
-  const [error, setError] = useState('');
+const DayDetailModal = ({
+  isOpen,
+  selectedDate,
+  logs,
+  onClose,
+  onAddHistorical,
+  onDeleteLog,
+}) => {
+  const [histAmount, setHistAmount] = useState("");
+  const [error, setError] = useState("");
 
   if (!isOpen || !selectedDate) return null;
 
   const dateStr = getDateString(selectedDate);
   // For historical logs, we need YYYY-MM-DD format
-  const dateIsoStr = selectedDate.toISOString().split('T')[0];
+  const dateIsoStr = selectedDate.toISOString().split("T")[0];
 
   const dayLogs = logs.filter((log) => {
     // Handle both real-time (timestamp) and historical (submitted_date) logs
-    if (log.source === 'historical' && log.submitted_date) {
+    if (log.source === "historical" && log.submitted_date) {
       // submitted_date is already in YYYY-MM-DD format
       return log.submitted_date === dateIsoStr;
     }
     // Handle real-time logs with Firestore Timestamp
     if (log.timestamp) {
-      const logDate = log.timestamp.toDate ? log.timestamp.toDate() : log.timestamp;
+      const logDate = log.timestamp.toDate
+        ? log.timestamp.toDate()
+        : log.timestamp;
       return logDate && getDateString(logDate) === dateStr;
     }
     return false;
   });
 
   const totalReps = dayLogs.reduce((sum, log) => sum + log.amount, 0);
-  const historicalLogs = dayLogs.filter((log) => log.source === 'historical');
-  const realtimeLogs = dayLogs.filter((log) => log.source !== 'historical');
+  const historicalLogs = dayLogs.filter((log) => log.source === "historical");
+  const realtimeLogs = dayLogs.filter((log) => log.source !== "historical");
 
   const handleAddHistorical = async () => {
-    setError('');
+    setError("");
     const amount = parseInt(histAmount, 10);
 
     if (!amount || amount <= 0) {
-      setError('Enter a positive number');
+      setError("Enter a positive number");
       return;
     }
 
     if (amount > 5000) {
-      setError('That seems too high. Max 5000 reps per entry.');
+      setError("That seems too high. Max 5000 reps per entry.");
       return;
     }
 
     try {
       await onAddHistorical(selectedDate, amount);
-      setHistAmount('');
+      setHistAmount("");
     } catch (err) {
-      setError(err.message || 'Failed to add historical data');
+      setError(err.message || "Failed to add historical data");
     }
   };
 
@@ -57,12 +66,20 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
       try {
         // Find the index of this log in the full logs array
         const logIndex = logs.findIndex((log) => {
-          if (log.source === 'historical' && log.submitted_date) {
-            return log.submitted_date === dateIsoStr && log.amount === logAmount;
+          if (log.source === "historical" && log.submitted_date) {
+            return (
+              log.submitted_date === dateIsoStr && log.amount === logAmount
+            );
           }
           if (log.timestamp) {
-            const logDate = log.timestamp.toDate ? log.timestamp.toDate() : log.timestamp;
-            return logDate && getDateString(logDate) === dateStr && log.amount === logAmount;
+            const logDate = log.timestamp.toDate
+              ? log.timestamp.toDate()
+              : log.timestamp;
+            return (
+              logDate &&
+              getDateString(logDate) === dateStr &&
+              log.amount === logAmount
+            );
           }
           return false;
         });
@@ -70,7 +87,7 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
           await onDeleteLog(logIndex);
         }
       } catch (err) {
-        setError(err.message || 'Failed to delete log');
+        setError(err.message || "Failed to delete log");
       }
     }
   };
@@ -81,11 +98,11 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
-            {selectedDate.toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
+            {selectedDate.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+              year: "numeric",
             })}
           </h2>
           <button
@@ -109,7 +126,9 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
         {/* Logs Section */}
         <div className="p-4">
           {dayLogs.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No logs for this date</p>
+            <p className="text-gray-500 text-center py-4">
+              No logs for this date
+            </p>
           ) : (
             <div className="space-y-3 mb-6">
               {/* Real-time logs */}
@@ -125,15 +144,19 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
                         className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200"
                       >
                         <div>
-                          <p className="font-semibold text-gray-900">{log.amount} reps</p>
+                          <p className="font-semibold text-gray-900">
+                            {log.amount} reps
+                          </p>
                           <p className="text-xs text-gray-500">
                             {log.timestamp?.toDate
-                              ? log.timestamp.toDate().toLocaleTimeString('en-US', {
-                                  hour: 'numeric',
-                                  minute: '2-digit',
-                                  meridiem: 'short',
-                                })
-                              : 'Time unavailable'}
+                              ? log.timestamp
+                                  .toDate()
+                                  .toLocaleTimeString("en-US", {
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    meridiem: "short",
+                                  })
+                              : "Time unavailable"}
                           </p>
                         </div>
                         <button
@@ -162,8 +185,12 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
                         className="flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-200"
                       >
                         <div>
-                          <p className="font-semibold text-gray-900">{log.amount} reps</p>
-                          <p className="text-xs text-gray-500">Historical entry</p>
+                          <p className="font-semibold text-gray-900">
+                            {log.amount} reps
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Historical entry
+                          </p>
                         </div>
                         <button
                           onClick={() => handleDeleteLog(log.amount)}
@@ -187,7 +214,11 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
               Add historical entry
             </h3>
 
-            {error && <p className="text-red-600 text-sm mb-3 bg-red-50 p-2 rounded">{error}</p>}
+            {error && (
+              <p className="text-red-600 text-sm mb-3 bg-red-50 p-2 rounded">
+                {error}
+              </p>
+            )}
 
             <div className="flex gap-2">
               <input
@@ -198,7 +229,7 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
                 value={histAmount}
                 onChange={(e) => {
                   setHistAmount(e.target.value);
-                  setError('');
+                  setError("");
                 }}
                 placeholder="Number of reps"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-orange"
@@ -212,7 +243,8 @@ const DayDetailModal = ({ isOpen, selectedDate, logs, onClose, onAddHistorical, 
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Use this to log workouts from past days that you didn't record in the app.
+              Use this to log workouts from past days that you didn't record in
+              the app.
             </p>
           </div>
         </div>

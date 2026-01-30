@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { getDaysInMonth, getFirstDayOfMonth } from '../utils/date';
+import React, { useMemo } from "react";
+import { getDaysInMonth, getFirstDayOfMonth } from "../utils/date";
 
 // Monthly contribution calendar for the current month.
 const ContributionCalendar = ({ logs, onDateClick }) => {
@@ -17,15 +17,22 @@ const ContributionCalendar = ({ logs, onDateClick }) => {
       let day;
 
       // Handle historical logs with submitted_date (YYYY-MM-DD format)
-      if (log.source === 'historical' && log.submitted_date) {
-        const [year, month, dateNum] = log.submitted_date.split('-').map(Number);
+      if (log.source === "historical" && log.submitted_date) {
+        const [year, month, dateNum] = log.submitted_date
+          .split("-")
+          .map(Number);
         if (year === currentYear && month === currentMonth + 1) {
           day = dateNum;
         }
       } else if (log.timestamp) {
         // Handle real-time logs with timestamp
-        const date = new Date(log.timestamp.toDate ? log.timestamp.toDate() : log.timestamp);
-        if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
+        const date = new Date(
+          log.timestamp.toDate ? log.timestamp.toDate() : log.timestamp,
+        );
+        if (
+          date.getMonth() === currentMonth &&
+          date.getFullYear() === currentYear
+        ) {
           day = date.getDate();
         }
       }
@@ -60,21 +67,21 @@ const ContributionCalendar = ({ logs, onDateClick }) => {
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               onDateClick?.(clickDate);
             }
           }}
         >
           {d}
         </div>
-      </div>
+      </div>,
     );
   }
 
   return (
     <div className="calendar">
       <div className="calendar-labels">
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+        {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={i} className="calendar-label">
             {d}
           </span>

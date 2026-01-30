@@ -1,18 +1,25 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Activity, Trophy, Calendar, Flame, TrendingUp, RotateCcw } from 'lucide-react';
-import Button from './components/Button';
-import Card from './components/Card';
-import ContributionCalendar from './components/ContributionCalendar';
-import DayDetailModal from './components/DayDetailModal';
-import { useAuth } from './hooks/useAuth';
-import { useUserData } from './hooks/useUserData';
-import { useLeaderboard } from './hooks/useLeaderboard';
-import { formatTime, getSeason } from './utils';
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Activity,
+  Trophy,
+  Calendar,
+  Flame,
+  TrendingUp,
+  RotateCcw,
+} from "lucide-react";
+import Button from "./components/Button";
+import Card from "./components/Card";
+import ContributionCalendar from "./components/ContributionCalendar";
+import DayDetailModal from "./components/DayDetailModal";
+import { useAuth } from "./hooks/useAuth";
+import { useUserData } from "./hooks/useUserData";
+import { useLeaderboard } from "./hooks/useLeaderboard";
+import { formatTime, getSeason } from "./utils";
 
 const VIEWS = {
-  DASHBOARD: 'dashboard',
-  STATS: 'stats',
-  LEADERBOARD: 'leaderboard',
+  DASHBOARD: "dashboard",
+  STATS: "stats",
+  LEADERBOARD: "leaderboard",
 };
 
 const UpdateBanner = ({ onRefresh, refreshing }) => (
@@ -20,10 +27,17 @@ const UpdateBanner = ({ onRefresh, refreshing }) => (
     <div className="card-soft flex items-center justify-between gap-3">
       <div>
         <p className="text-sm font-bold text-black">Update available</p>
-        <p className="text-xs text-neutral-gray-text">Tap refresh to get the latest version.</p>
+        <p className="text-xs text-neutral-gray-text">
+          Tap refresh to get the latest version.
+        </p>
       </div>
-      <Button variant="primary" size="sm" onClick={onRefresh} disabled={refreshing}>
-        {refreshing ? 'Refreshing...' : 'Refresh'}
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={onRefresh}
+        disabled={refreshing}
+      >
+        {refreshing ? "Refreshing..." : "Refresh"}
       </Button>
     </div>
   </div>
@@ -32,9 +46,9 @@ const UpdateBanner = ({ onRefresh, refreshing }) => (
 export default function App() {
   const { user, loading: loadingAuth, db, appId, error: authError } = useAuth();
   const season = getSeason();
-  const isTraining = season === 'TRAINING';
+  const isTraining = season === "TRAINING";
 
-  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState("");
   const [view, setView] = useState(VIEWS.DASHBOARD);
   const [showCelebration, setShowCelebration] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -63,7 +77,7 @@ export default function App() {
 
   useEffect(() => {
     if (!user) return;
-    const storedName = localStorage.getItem('pushup_username');
+    const storedName = localStorage.getItem("pushup_username");
     if (storedName) loadUserProfile(storedName);
   }, [loadUserProfile, user]);
 
@@ -71,7 +85,9 @@ export default function App() {
   useEffect(() => {
     const DAILY_GOAL = 87;
     const shouldCelebrate =
-      isTraining && todayReps >= DAILY_GOAL && prevTodayRepsRef.current < DAILY_GOAL;
+      isTraining &&
+      todayReps >= DAILY_GOAL &&
+      prevTodayRepsRef.current < DAILY_GOAL;
     prevTodayRepsRef.current = todayReps;
     if (!shouldCelebrate) return;
 
@@ -85,8 +101,8 @@ export default function App() {
 
   useEffect(() => {
     const handleUpdate = () => setUpdateAvailable(true);
-    window.addEventListener('sw-update', handleUpdate);
-    return () => window.removeEventListener('sw-update', handleUpdate);
+    window.addEventListener("sw-update", handleUpdate);
+    return () => window.removeEventListener("sw-update", handleUpdate);
   }, []);
 
   const handleRefreshUpdate = () => {
@@ -97,13 +113,17 @@ export default function App() {
     }
 
     const onControllerChange = () => window.location.reload();
-    navigator.serviceWorker.addEventListener('controllerchange', onControllerChange, {
-      once: true,
-    });
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      onControllerChange,
+      {
+        once: true,
+      },
+    );
 
     if (registration.waiting) {
       setRefreshingUpdate(true);
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      registration.waiting.postMessage({ type: "SKIP_WAITING" });
     } else {
       window.location.reload();
     }
@@ -112,29 +132,34 @@ export default function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (!usernameInput.trim()) return;
-    localStorage.setItem('pushup_username', usernameInput);
+    localStorage.setItem("pushup_username", usernameInput);
     loadUserProfile(usernameInput);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('pushup_username');
+    localStorage.removeItem("pushup_username");
     clearProfile();
-    setUsernameInput('');
+    setUsernameInput("");
   };
 
   if (authError) {
     return (
       <div className="min-h-screen bg-neutral-white flex items-center justify-center p-4">
         {updateAvailable && (
-          <UpdateBanner onRefresh={handleRefreshUpdate} refreshing={refreshingUpdate} />
+          <UpdateBanner
+            onRefresh={handleRefreshUpdate}
+            refreshing={refreshingUpdate}
+          />
         )}
         <Card className="error-card">
           <div className="text-center">
             <h2 className="error-title">Setup Required</h2>
             <p className="error-message">
-              {authError.message || 'An error occurred. Please try again.'}
+              {authError.message || "An error occurred. Please try again."}
             </p>
-            <div className="error-hint">Check the README.md for setup instructions.</div>
+            <div className="error-hint">
+              Check the README.md for setup instructions.
+            </div>
           </div>
         </Card>
       </div>
@@ -145,7 +170,10 @@ export default function App() {
     return (
       <div className="min-h-screen bg-neutral-white flex items-center justify-center p-4">
         {updateAvailable && (
-          <UpdateBanner onRefresh={handleRefreshUpdate} refreshing={refreshingUpdate} />
+          <UpdateBanner
+            onRefresh={handleRefreshUpdate}
+            refreshing={refreshingUpdate}
+          />
         )}
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-16 h-16 bg-neutral-gray-light rounded-full mb-4" />
@@ -159,7 +187,10 @@ export default function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-neutral-white via-orange-50/30 to-neutral-white flex flex-col relative overflow-hidden">
         {updateAvailable && (
-          <UpdateBanner onRefresh={handleRefreshUpdate} refreshing={refreshingUpdate} />
+          <UpdateBanner
+            onRefresh={handleRefreshUpdate}
+            refreshing={refreshingUpdate}
+          />
         )}
 
         {/* Decorative background elements */}
@@ -175,7 +206,9 @@ export default function App() {
               Push<span className="text-brand-orange">Up</span>
             </h1>
             <div className="w-16 h-0.5 bg-brand-orange mx-auto my-2" />
-            <div className="text-sm font-bold text-neutral-gray-mid tracking-wider">2026</div>
+            <div className="text-sm font-bold text-neutral-gray-mid tracking-wider">
+              2026
+            </div>
           </div>
 
           {/* About Card */}
@@ -188,16 +221,22 @@ export default function App() {
                 <div className="w-8 h-8 rounded-full bg-brand-orange/10 flex items-center justify-center">
                   <Activity className="w-4 h-4 text-brand-orange" />
                 </div>
-                <h2 className="text-base font-bold text-gray-900">About This Challenge</h2>
+                <h2 className="text-base font-bold text-gray-900">
+                  About This Challenge
+                </h2>
               </div>
               <p className="text-sm text-gray-700 leading-relaxed">
-                Take on <span className="font-bold text-brand-orange">2,000 push-ups</span> for the{' '}
-                <span className="font-bold">2,000 lives</span> lost to suicide each day, worldwide.
+                Take on{" "}
+                <span className="font-bold text-brand-orange">
+                  2,000 push-ups
+                </span>{" "}
+                for the <span className="font-bold">2,000 lives</span> lost to
+                suicide each day, worldwide.
               </p>
               <div className="pt-2 border-t border-orange-100">
                 <p className="text-xs text-gray-600 italic">
-                  Every rep is a tribute. Every day is progress. Together, we raise awareness and
-                  remember those we've lost.
+                  Every rep is a tribute. Every day is progress. Together, we
+                  raise awareness and remember those we've lost.
                 </p>
               </div>
             </div>
@@ -217,7 +256,12 @@ export default function App() {
                   autoFocus
                 />
               </div>
-              <Button variant="primary" size="lg" className="w-full shadow-lg" type="submit">
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full shadow-lg"
+                type="submit"
+              >
                 Start Pushing
               </Button>
             </form>
@@ -235,12 +279,14 @@ export default function App() {
   const { training_reps = 0, official_reps = 0 } = userData;
   const DAILY_GOAL = 87;
   const CHALLENGE_GOAL = 2000;
-  const heroLabel = isTraining ? "Today's Effort" : 'Challenge Total';
+  const heroLabel = isTraining ? "Today's Effort" : "Challenge Total";
   const heroCurrent = isTraining ? todayReps : official_reps;
   const heroGoal = isTraining ? DAILY_GOAL : CHALLENGE_GOAL;
   const heroProgress = heroGoal ? Math.min(heroCurrent / heroGoal, 1) : 0;
-  const footerLabel = isTraining ? 'Challenge Total' : 'Remaining';
-  const footerValue = isTraining ? official_reps : Math.max(CHALLENGE_GOAL - official_reps, 0);
+  const footerLabel = isTraining ? "Challenge Total" : "Remaining";
+  const footerValue = isTraining
+    ? official_reps
+    : Math.max(CHALLENGE_GOAL - official_reps, 0);
   const footerProgress = isTraining
     ? Math.min(official_reps / CHALLENGE_GOAL, 1)
     : Math.min((CHALLENGE_GOAL - official_reps) / CHALLENGE_GOAL, 1);
@@ -248,7 +294,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-neutral-white pb-8 relative max-w-lg mx-auto shadow-2xl">
       {updateAvailable && (
-        <UpdateBanner onRefresh={handleRefreshUpdate} refreshing={refreshingUpdate} />
+        <UpdateBanner
+          onRefresh={handleRefreshUpdate}
+          refreshing={refreshingUpdate}
+        />
       )}
       {showCelebration && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
@@ -272,9 +321,9 @@ export default function App() {
                   <Trophy className="w-5 h-5 text-brand-orange" />
                 )}
                 <h1
-                  className={`text-2xl font-bold ${isTraining ? 'text-black' : 'text-brand-orange'}`}
+                  className={`text-2xl font-bold ${isTraining ? "text-black" : "text-brand-orange"}`}
                 >
-                  {isTraining ? 'Training Camp' : 'The Challenge'}
+                  {isTraining ? "Training Camp" : "The Challenge"}
                 </h1>
               </div>
             </div>
@@ -295,7 +344,9 @@ export default function App() {
               <span className="text-[68px] font-extrabold leading-[0.85] tracking-[-0.03em] bg-gradient-to-br from-[#FF5500] via-[#FF9F0A] to-[#FF5500] bg-clip-text text-transparent drop-shadow-[0_2px_4px_rgba(255,85,0,0.15)]">
                 {heroCurrent}
               </span>
-              <span className="text-[15px] font-semibold text-[#636366]/80">/ {heroGoal} reps</span>
+              <span className="text-[15px] font-semibold text-[#636366]/80">
+                / {heroGoal} reps
+              </span>
             </div>
 
             <div className="h-2.5 rounded-full bg-black/5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] mb-7">
@@ -310,7 +361,9 @@ export default function App() {
                 {footerLabel}
               </span>
               <div className="flex items-center gap-3">
-                <span className="text-[13px] font-semibold text-[#333]">{footerValue}</span>
+                <span className="text-[13px] font-semibold text-[#333]">
+                  {footerValue}
+                </span>
                 <div className="w-20 h-1.5 rounded-full bg-black/10 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-[#AEAEB2]"
@@ -334,7 +387,9 @@ export default function App() {
                 <span className="block text-2xl font-bold text-black">
                   {Math.ceil((CHALLENGE_GOAL - official_reps) / 23)}
                 </span>
-                <span className="text-xs text-neutral-gray-mid">Daily Avg Needed</span>
+                <span className="text-xs text-neutral-gray-mid">
+                  Daily Avg Needed
+                </span>
               </div>
             </div>
           )}
@@ -345,19 +400,19 @@ export default function App() {
         <div className="nav-tabs">
           <button
             onClick={() => setView(VIEWS.DASHBOARD)}
-            className={`nav-tab ${view === VIEWS.DASHBOARD ? 'active' : ''}`}
+            className={`nav-tab ${view === VIEWS.DASHBOARD ? "active" : ""}`}
           >
             Log
           </button>
           <button
             onClick={() => setView(VIEWS.STATS)}
-            className={`nav-tab ${view === VIEWS.STATS ? 'active' : ''}`}
+            className={`nav-tab ${view === VIEWS.STATS ? "active" : ""}`}
           >
             Stats
           </button>
           <button
             onClick={() => setView(VIEWS.LEADERBOARD)}
-            className={`nav-tab ${view === VIEWS.LEADERBOARD ? 'active' : ''}`}
+            className={`nav-tab ${view === VIEWS.LEADERBOARD ? "active" : ""}`}
           >
             Rank
           </button>
@@ -370,7 +425,7 @@ export default function App() {
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold text-black">Quick Add</h3>
               <span className="text-xs text-neutral-gray-mid font-medium bg-neutral-gray-lighter px-3 py-1 rounded-full">
-                {isTraining ? 'Training Mode' : 'Official Mode'}
+                {isTraining ? "Training Mode" : "Official Mode"}
               </span>
             </div>
 
@@ -415,7 +470,7 @@ export default function App() {
 
             <div className="space-y-4 pt-4 border-t border-gray-100">
               <Button
-                variant={isUndoable ? 'danger' : 'ghost'}
+                variant={isUndoable ? "danger" : "ghost"}
                 size="sm"
                 onClick={undoLastAction}
                 disabled={!isUndoable}
@@ -423,8 +478,8 @@ export default function App() {
               >
                 <RotateCcw className="w-4 h-4" />
                 {isUndoable
-                  ? `Undo Last (${lastLogAmount > 0 ? '+' : ''}${lastLogAmount})`
-                  : 'Nothing to Undo'}
+                  ? `Undo Last (${lastLogAmount > 0 ? "+" : ""}${lastLogAmount})`
+                  : "Nothing to Undo"}
               </Button>
 
               {recentLogs.length > 0 && (
@@ -434,14 +489,14 @@ export default function App() {
                     {recentLogs.map((log, i) => (
                       <div key={i} className="activity-item">
                         <span className="activity-time">
-                          {log.source === 'historical'
+                          {log.source === "historical"
                             ? `${log.submitted_date} (Historical)`
                             : formatTime(log.timestamp)}
                         </span>
                         <span
-                          className={`activity-amount ${log.amount > 0 ? 'positive' : 'negative'}`}
+                          className={`activity-amount ${log.amount > 0 ? "positive" : "negative"}`}
                         >
-                          {log.amount > 0 ? '+' : ''}
+                          {log.amount > 0 ? "+" : ""}
                           {log.amount} reps
                         </span>
                       </div>
@@ -502,7 +557,10 @@ export default function App() {
                 </div>
                 <span className="stats-value">
                   {calculateStreak() > 0
-                    ? Math.round((isTraining ? training_reps : official_reps) / calculateStreak())
+                    ? Math.round(
+                        (isTraining ? training_reps : official_reps) /
+                          calculateStreak(),
+                      )
                     : 0}
                 </span>
               </div>
@@ -515,22 +573,35 @@ export default function App() {
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-xl font-bold text-black">Rankings</h3>
               <span className="text-xs text-neutral-gray-mid">
-                {isTraining ? 'Training' : 'Official'} Phase
+                {isTraining ? "Training" : "Official"} Phase
               </span>
             </div>
 
             {leaderboardData.map((buddy, index) => {
               const isMe = buddy.id === userData.id;
-              const score = isTraining ? buddy.training_reps : buddy.official_reps;
+              const score = isTraining
+                ? buddy.training_reps
+                : buddy.official_reps;
               return (
-                <div key={buddy.id} className={`leaderboard-item ${isMe ? 'current-user' : ''}`}>
+                <div
+                  key={buddy.id}
+                  className={`leaderboard-item ${isMe ? "current-user" : ""}`}
+                >
                   <div className="flex items-center gap-4">
-                    <span className={`leaderboard-rank ${isMe ? 'current-user' : ''}`}>
+                    <span
+                      className={`leaderboard-rank ${isMe ? "current-user" : ""}`}
+                    >
                       #{index + 1}
                     </span>
                     <div>
-                      <span className="leaderboard-name">{buddy.displayName}</span>
-                      {isMe && <span className="ml-2 text-xs opacity-75">That's you!</span>}
+                      <span className="leaderboard-name">
+                        {buddy.displayName}
+                      </span>
+                      {isMe && (
+                        <span className="ml-2 text-xs opacity-75">
+                          That's you!
+                        </span>
+                      )}
                     </div>
                   </div>
                   <span className="text-2xl font-bold">{score || 0}</span>

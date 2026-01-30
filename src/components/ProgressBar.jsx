@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // Simple progress bar with label and totals.
 const ProgressBar = ({
@@ -6,7 +6,7 @@ const ProgressBar = ({
   total = 100,
   label,
   subLabel,
-  colorClass = 'bg-brand-orange',
+  colorClass = "bg-brand-orange",
 }) => {
   const percentage = Math.min(100, Math.max(0, (current / total) * 100));
 
@@ -14,13 +14,17 @@ const ProgressBar = ({
     <div className="w-full">
       <div className="flex justify-between items-end mb-2">
         <div>
-          <span className="text-4xl font-bold block leading-none">{current}</span>
+          <span className="text-4xl font-bold block leading-none">
+            {current}
+          </span>
           <span className="text-xs text-neutral-gray-text uppercase tracking-wider font-semibold">
             {label}
           </span>
         </div>
         <div className="text-right">
-          <span className="text-lg font-bold text-neutral-gray-text block">{total}</span>
+          <span className="text-lg font-bold text-neutral-gray-text block">
+            {total}
+          </span>
           <span className="text-xs text-neutral-gray-text">{subLabel}</span>
         </div>
       </div>
