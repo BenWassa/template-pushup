@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "build:pages": "npm run build && rm -rf docs && cp -R dist docs && touch docs/.nojekyll"
+    "build:pages": "npm run lint && vite build --outDir docs && touch docs/.nojekyll"
   },
   "dependencies": {
     "lucide-react": "^0.562.0",
